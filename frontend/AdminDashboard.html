@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Dashboard - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Admin">
+<nav id="nav"></nav>
+
+<div class="container">
+  <div class="welcome">
+    <h1 id="welcome"></h1>
+    <p>Keep an eye on members, coaches and workouts.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><h2 id="members">0</h2><p>Members</p></div>
+    <div class="stat"><h2 id="coaches">0</h2><p>Coaches</p></div>
+    <div class="stat"><h2 id="total">0</h2><p>Workouts Logged</p></div>
+    <div class="stat"><h2 id="completed">0</h2><p>Completed</p></div>
+  </div>
+
+  <div class="cards">
+    <a class="card" href="AllWorkouts.html"><div class="icon">🏋️</div><h3>All Workouts</h3><p>View workouts and assign coaches.</p></a>
+    <a class="card" href="Members.html"><div class="icon">🙋</div><h3>Members</h3><p>See registered members.</p></a>
+    <a class="card" href="Coaches.html"><div class="icon">🧑‍🏫</div><h3>Coaches</h3><p>See registered coaches.</p></a>
+    <a class="card" href="Reports.html"><div class="icon">📊</div><h3>Reports</h3><p>Numbers and ratings at a glance.</p></a>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+document.getElementById("welcome").textContent = "Welcome, " + getUser().name + " 🛠️";
+
+getJSON("/admin-dashboard").then(data => {
+  ["members", "coaches", "total", "completed"].forEach(key => {
+    document.getElementById(key).textContent = data[key];
+  });
+}).catch(error => console.log(error));
+</script>
+</body>
+</html>

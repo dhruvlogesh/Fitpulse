@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>All Workouts - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Admin">
+<nav id="nav"></nav>
+
+<div class="container" style="max-width:1200px">
+  <h1>All Workouts</h1>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Member</th><th>Title</th><th>Category</th><th>Intensity</th><th>Status</th><th>Assign Coach</th></tr>
+      </thead>
+      <tbody id="workouts"><tr><td colspan="7">Loading workouts...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+let coachList = [];
+
+getJSON("/coaches").then(data => {
+  coachList = data;
+  loadWorkouts();
+}).catch(error => console.log(error));
+
+function loadWorkouts() {
+  getJSON("/workouts").then(data => {
+    const table = document.getElementById("workouts");
+
+    if (data.length === 0) {
+      table.innerHTML = `<tr><td colspan="7">No workouts logged yet.</td></tr>`;
+      return;
+    }
+
+    table.innerHTML = data.map(w => {
+      const options = `<option value="">Select coach</option>` + coachList.map(c =>
+        `<option value="${esc(c.userId)}" ${w.coachId === c.userId ? "selected" : ""}>${esc(c.name)}</option>`
+      ).join("");
+
+      return `
+        <tr>
+          <td>${esc(w.workoutId)}</td>
+          <td>${esc(w.memberName)}</td>
+          <td>${esc(w.title)}</td>
+          <td>${esc(w.category)}</td>
+          <td>${esc(w.intensity)}</td>
+          <td class="badge ${statusClass(w.status)}">${esc(w.status)}</td>
+          <td>
+            <select id="coach-${esc(w.workoutId)}">${options}</select>
+            <button class="btn small" onclick="assignCoach('${esc(w.workoutId)}')">Assign</button>
+          </td>
+        </tr>`;
+    }).join("");
+  }).catch(error => console.log(error));
+}
+
+async function assignCoach(workoutId) {
+  const coachId = document.getElementById("coach-" + workoutId).value;
+
+  if (!coachId) {
+    alert("Please select a coach.");
+    return;
+  }
+
+  const { data } = await send("/assign-workout/" + workoutId, "PUT", { coachId });
+  alert(data.message);
+  loadWorkouts();
+}
+</script>
+</body>
+</html>

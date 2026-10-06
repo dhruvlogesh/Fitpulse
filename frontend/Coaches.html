@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Coaches - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Admin">
+<nav id="nav"></nav>
+
+<div class="container">
+  <h1>Coaches</h1>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Coach ID</th><th>Name</th><th>Email</th><th>Phone</th></tr></thead>
+      <tbody id="coaches"><tr><td colspan="4">Loading coaches...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+getJSON("/coaches").then(data => {
+  const table = document.getElementById("coaches");
+
+  if (data.length === 0) {
+    table.innerHTML = `<tr><td colspan="4">No coaches have registered yet.</td></tr>`;
+    return;
+  }
+
+  table.innerHTML = data.map(c => `
+    <tr>
+      <td>${esc(c.userId)}</td>
+      <td>${esc(c.name)}</td>
+      <td>${esc(c.email)}</td>
+      <td>${esc(c.phone)}</td>
+    </tr>`).join("");
+}).catch(error => console.log(error));
+</script>
+</body>
+</html>

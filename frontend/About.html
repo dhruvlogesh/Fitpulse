@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>About - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Public">
+<nav id="nav"></nav>
+
+<section class="hero" style="min-height:260px;justify-content:center;text-align:center">
+  <div>
+    <h1 style="font-size:36px">About FitPulse</h1>
+    <p id="heroText">Fitness is easier when you can see your effort.</p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="box" style="margin-bottom:25px">
+    <h2>Why we built it</h2>
+    <p class="info">Most people don't quit because workouts are hard. They quit because they can't see
+    their progress. FitPulse gives you one place to log sessions, note how they felt,
+    track your weight and hear back from a coach.</p>
+  </div>
+
+  <div class="box" style="margin-bottom:25px">
+    <h2>How it works</h2>
+    <p class="info">Member logs a workout → Admin assigns a coach → Coach reviews it and leaves remarks →
+    Member checks the feedback → Progress keeps building.</p>
+  </div>
+
+  <div class="box">
+    <h2>Who uses it</h2>
+    <div class="cards">
+      <div class="card"><div class="icon">🙋</div><h3>Member</h3><p>Logs workouts, tracks weight and reads coach remarks.</p></div>
+      <div class="card"><div class="icon">🧑‍🏫</div><h3>Coach</h3><p>Reviews assigned workouts, updates status and gives tips.</p></div>
+      <div class="card"><div class="icon">🛠️</div><h3>Admin</h3><p>Manages members, coaches, assignments and reports.</p></div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+const messages = [
+  "Fitness is easier when you can see your effort.",
+  "Log it, track it, improve it.",
+  "One workout at a time."
+];
+let i = 0;
+setInterval(() => {
+  i = (i + 1) % messages.length;
+  document.getElementById("heroText").textContent = messages[i];
+}, 3000);
+</script>
+</body>
+</html>

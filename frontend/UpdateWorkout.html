@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Update Workout - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Coach">
+<nav id="nav"></nav>
+
+<div class="container" style="max-width:700px">
+  <h1>Review Workout</h1>
+  <div class="box">
+    <label>Workout</label>
+    <input type="text" id="workoutName" readonly>
+
+    <label>Status</label>
+    <select id="status">
+      <option>Planned</option>
+      <option>In Progress</option>
+      <option>Completed</option>
+    </select>
+
+    <label>Your Remarks</label>
+    <textarea id="remarks" placeholder="Form tips, what went well, what to try next time..."></textarea>
+
+    <button class="btn" style="margin-top:20px" onclick="updateWorkout()">Save Update</button>
+    <p class="msg" id="message" style="text-align:left"></p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+const workoutId = localStorage.getItem("workoutId");
+const msg = document.getElementById("message");
+
+if (!workoutId) {
+  say(msg, "No workout selected. Go back to Workouts and pick one.", false);
+} else {
+  getJSON("/workout/" + workoutId).then(w => {
+    document.getElementById("workoutName").value = w.workoutId + " - " + w.title;
+    document.getElementById("status").value = w.status;
+    document.getElementById("remarks").value = w.remarks || "";
+  }).catch(error => console.log(error));
+}
+
+async function updateWorkout() {
+  const status = document.getElementById("status").value;
+  const remarks = document.getElementById("remarks").value.trim();
+
+  if (!workoutId) return say(msg, "No workout selected.", false);
+  if (!remarks) return say(msg, "Please add a few remarks for the member.", false);
+
+  try {
+    const { ok, data } = await send("/workout/" + workoutId, "PUT", { status, remarks });
+    say(msg, data.message, ok);
+  } catch (err) {
+    say(msg, "Server connection failed.", false);
+  }
+}
+</script>
+</body>
+</html>

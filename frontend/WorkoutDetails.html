@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Workout Details - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Member">
+<nav id="nav"></nav>
+
+<div class="container" style="max-width:800px">
+  <h1>Workout Details</h1>
+  <div class="box" id="details">Loading workout...</div>
+</div>
+
+<script src="app.js"></script>
+<script>
+const id = localStorage.getItem("workoutId");
+const box = document.getElementById("details");
+
+if (!id) {
+  box.innerHTML = "<h2>No workout selected</h2>";
+} else {
+  getJSON("/workout/" + id).then(w => {
+    box.innerHTML = `
+      <div class="detail-row"><span class="label">Workout ID:</span> ${esc(w.workoutId)}</div>
+      <div class="detail-row"><span class="label">Title:</span> ${esc(w.title)}</div>
+      <div class="detail-row"><span class="label">Category:</span> ${esc(w.category)}</div>
+      <div class="detail-row"><span class="label">Intensity:</span> ${esc(w.intensity)}</div>
+      <div class="detail-row"><span class="label">Duration:</span> ${w.duration} minutes</div>
+      <div class="detail-row"><span class="label">Calories:</span> ${w.calories ? w.calories + " kcal" : "Not recorded"}</div>
+      <div class="detail-row"><span class="label">Date:</span> ${niceDate(w.date)}</div>
+      <div class="detail-row"><span class="label">Status:</span> <span class="badge ${statusClass(w.status)}">${esc(w.status)}</span></div>
+      <div class="detail-row"><span class="label">Exercises & Notes:</span><br><br>${esc(w.description) || "No notes added."}</div>
+      <div class="detail-row"><span class="label">Coach Remarks:</span><br><br>${esc(w.remarks) || (w.coachId ? "Your coach hasn't left remarks yet." : "No coach assigned yet.")}</div>
+      <br>
+      ${w.status === "Completed" ? `<a class="btn" href="Feedback.html">⭐ Rate this workout</a>` : ""}
+      <a class="btn light" style="border:1px solid #ff6b35" href="MyWorkouts.html">← Back to My Workouts</a>`;
+  }).catch(() => (box.innerHTML = "<h2>Unable to load workout</h2>"));
+}
+</script>
+</body>
+</html>

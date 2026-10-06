@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Log Workout - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Member">
+<nav id="nav"></nav>
+
+<div class="narrow" style="max-width:560px">
+  <div class="box">
+    <h1 style="text-align:center">Log a Workout</h1>
+
+    <form id="workoutForm">
+      <label>Workout Title</label>
+      <input type="text" id="title" placeholder="e.g. Chest & triceps day">
+
+      <div class="row2">
+        <div>
+          <label>Category</label>
+          <select id="category">
+            <option value="">Select category</option>
+            <option>Strength</option>
+            <option>Cardio</option>
+            <option>Yoga</option>
+            <option>HIIT</option>
+          </select>
+        </div>
+        <div>
+          <label>Intensity</label>
+          <select id="intensity">
+            <option value="">How hard was it?</option>
+            <option>Light</option>
+            <option>Moderate</option>
+            <option>Intense</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div>
+          <label>Duration (minutes)</label>
+          <input type="number" id="duration" min="1" placeholder="45">
+        </div>
+        <div>
+          <label>Calories burned (optional)</label>
+          <input type="number" id="calories" min="0" placeholder="300">
+        </div>
+      </div>
+
+      <div class="row2">
+        <div>
+          <label>Date</label>
+          <input type="date" id="date">
+        </div>
+        <div>
+          <label>Did you do it already?</label>
+          <select id="status">
+            <option value="Completed">Yes, it's done</option>
+            <option value="Planned">Not yet, planning it</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Exercises & Notes</label>
+      <textarea id="description" placeholder="Bench press 3x10, push-ups 3x15... how did it feel?"></textarea>
+
+      <button class="btn full" type="submit">Save Workout</button>
+      <p class="msg" id="message"></p>
+    </form>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+document.getElementById("date").valueAsDate = new Date();
+
+document.getElementById("workoutForm").onsubmit = async function (e) {
+  e.preventDefault();
+
+  const msg = document.getElementById("message");
+  const body = {
+    userId: getUser().id,
+    title: document.getElementById("title").value.trim(),
+    category: document.getElementById("category").value,
+    intensity: document.getElementById("intensity").value,
+    duration: document.getElementById("duration").value,
+    calories: document.getElementById("calories").value,
+    date: document.getElementById("date").value,
+    status: document.getElementById("status").value,
+    description: document.getElementById("description").value.trim()
+  };
+
+  if (!body.title || !body.category || !body.intensity || !body.duration) {
+    return say(msg, "Please fill title, category, intensity and duration.", false);
+  }
+
+  try {
+    const { ok, data } = await send("/workouts", "POST", body);
+    say(msg, data.message, ok);
+    if (ok) {
+      this.reset();
+      document.getElementById("date").valueAsDate = new Date();
+    }
+  } catch (err) {
+    say(msg, "Server connection failed.", false);
+  }
+};
+</script>
+</body>
+</html>

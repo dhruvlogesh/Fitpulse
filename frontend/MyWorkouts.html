@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Workouts - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Member">
+<nav id="nav"></nav>
+
+<div class="container">
+  <h1>My Workouts</h1>
+  <div id="workouts">Loading your workouts...</div>
+</div>
+
+<script src="app.js"></script>
+<script>
+function loadWorkouts() {
+  getJSON("/workouts/user/" + getUser().id).then(data => {
+    const box = document.getElementById("workouts");
+
+    if (data.length === 0) {
+      box.innerHTML = `
+        <div class="item" style="text-align:center;padding:40px">
+          <div style="font-size:45px">🏁</div>
+          <h2>No workouts yet</h2>
+          <p class="muted">Your first session is the hardest one. Let's log it!</p>
+          <a class="btn" href="LogWorkout.html">Log a Workout</a>
+        </div>`;
+      return;
+    }
+
+    box.innerHTML = data.map(w => `
+      <div class="item">
+        <h2>${esc(w.title)}</h2>
+        <div class="info">
+          ${esc(w.category)} · ${esc(w.intensity)} · ${w.duration} min · ${niceDate(w.date)}<br>
+          Status: <span class="badge ${statusClass(w.status)}">${esc(w.status)}</span>
+        </div>
+        <br>
+        <a class="btn small" href="WorkoutDetails.html" onclick="selectWorkout('${esc(w.workoutId)}')">View Details</a>
+        ${w.status !== "Completed" ? `<button class="btn small" onclick="markDone('${esc(w.workoutId)}')">Mark as done</button>` : ""}
+      </div>`).join("");
+  }).catch(error => {
+    console.log(error);
+    document.getElementById("workouts").innerHTML = `<div class="item"><h2>Unable to load workouts</h2></div>`;
+  });
+}
+
+async function markDone(id) {
+  const { data } = await send("/workout/" + id + "/done", "PUT");
+  alert(data.message);
+  loadWorkouts();
+}
+
+loadWorkouts();
+</script>
+</body>
+</html>

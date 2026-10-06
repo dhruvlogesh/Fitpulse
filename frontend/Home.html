@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FitPulse - Workout & Progress Tracker</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Public">
+<nav id="nav"></nav>
+
+<section class="hero" id="hero">
+  <div>
+    <h1>Show up. Log it.<br><span>See yourself grow.</span></h1>
+    <p id="tagline">FitPulse helps you record every workout, track your body progress
+    and get honest feedback from a real coach, all in one simple place.</p>
+    <a class="btn light" href="Register.html">Start Training</a>
+    <a class="btn" href="Login.html">I already have an account</a>
+  </div>
+</section>
+
+<section class="section">
+  <h2>What is FitPulse?</h2>
+  <p>FitPulse is a simple web platform for people who want to stay consistent.
+  Members log their workouts and weight, coaches review the sessions and leave
+  tips, and everyone can see how far they have come.</p>
+</section>
+
+<section class="container" style="margin-top:0">
+  <div class="stats">
+    <div class="stat"><h2 id="members">0</h2><p>Members</p></div>
+    <div class="stat"><h2 id="total">0</h2><p>Workouts Logged</p></div>
+    <div class="stat"><h2 id="completed">0</h2><p>Workouts Completed</p></div>
+    <div class="stat"><h2 id="minutes">0</h2><p>Minutes Trained</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Pick Your Style</h2>
+  <div class="cards">
+    <div class="card"><div class="icon">🏋️</div><h3>Strength</h3><p>Build muscle with weights and bodyweight moves</p></div>
+    <div class="card"><div class="icon">🏃</div><h3>Cardio</h3><p>Running, cycling, skipping: get the heart going</p></div>
+    <div class="card"><div class="icon">🧘</div><h3>Yoga</h3><p>Stretch, balance and breathe</p></div>
+    <div class="card"><div class="icon">⚡</div><h3>HIIT</h3><p>Short, intense rounds with quick rests</p></div>
+  </div>
+</section>
+
+<script src="app.js"></script>
+<script>
+const photos = [
+  "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1600&q=80"
+];
+const lines = [
+  "FitPulse helps you record every workout, track your body progress and get honest feedback from a real coach, all in one simple place.",
+  "Small workouts add up. Log today's session and keep the streak alive.",
+  "You don't have to be perfect. You just have to be consistent."
+];
+let i = 0;
+const hero = document.getElementById("hero");
+const tagline = document.getElementById("tagline");
+
+function changeScene() {
+  hero.style.backgroundImage = `linear-gradient(#0007,#0007),url("${photos[i % photos.length]}")`;
+  tagline.textContent = lines[i % lines.length];
+  i++;
+}
+changeScene();
+setInterval(changeScene, 5000);
+
+getJSON("/public-stats").then(data => {
+  document.getElementById("members").textContent = data.members;
+  document.getElementById("total").textContent = data.total;
+  document.getElementById("completed").textContent = data.completed;
+  document.getElementById("minutes").textContent = data.minutes;
+}).catch(error => console.log(error));
+</script>
+</body>
+</html>

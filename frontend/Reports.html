@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reports - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Admin">
+<nav id="nav"></nav>
+
+<div class="container">
+  <h1>Workout Reports</h1>
+
+  <div class="stats">
+    <div class="stat"><h2 id="total">0</h2><p>Total Workouts</p></div>
+    <div class="stat"><h2 id="planned">0</h2><p>Planned</p></div>
+    <div class="stat"><h2 id="progress">0</h2><p>In Progress</p></div>
+    <div class="stat"><h2 id="completed">0</h2><p>Completed</p></div>
+  </div>
+
+  <div class="box" style="margin-top:30px">
+    <h2 style="margin-top:0">Workouts by category</h2>
+    <div id="bars"></div>
+  </div>
+
+  <div class="box" style="margin-top:25px">
+    <h2 style="margin-top:0">Member feedback</h2>
+    <p id="rating" class="muted">Loading...</p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+getJSON("/workout-reports").then(data => {
+  ["total", "planned", "progress", "completed"].forEach(key => {
+    document.getElementById(key).textContent = data[key];
+  });
+
+  const biggest = Math.max(1, ...Object.values(data.byCategory));
+  document.getElementById("bars").innerHTML = Object.entries(data.byCategory).map(([name, count]) => `
+    <div class="bar-row">
+      <span>${esc(name)}</span>
+      <div class="bar" style="width:${(count / biggest) * 70}%"></div>
+      <b>${count}</b>
+    </div>`).join("");
+
+  document.getElementById("rating").textContent = data.feedbackCount
+    ? "Average rating: " + data.avgRating + " / 5 from " + data.feedbackCount + " review(s)."
+    : "No feedback has been submitted yet.";
+}).catch(error => console.log(error));
+</script>
+</body>
+</html>

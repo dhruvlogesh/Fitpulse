@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Progress - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Member">
+<nav id="nav"></nav>
+
+<div class="container">
+  <h1>My Progress 📈</h1>
+
+  <div class="stats" style="margin-bottom:30px">
+    <div class="stat"><h2 id="start">-</h2><p>Starting Weight (kg)</p></div>
+    <div class="stat"><h2 id="latest">-</h2><p>Latest Weight (kg)</p></div>
+    <div class="stat"><h2 id="change">-</h2><p>Total Change (kg)</p></div>
+  </div>
+
+  <div class="box" style="margin-bottom:30px">
+    <h2 style="margin-top:0">Add today's weigh-in</h2>
+    <div class="row2">
+      <div>
+        <label>Weight (kg)</label>
+        <input type="number" id="weight" step="0.1" min="1" placeholder="e.g. 68.5">
+      </div>
+      <div>
+        <label>Note (optional)</label>
+        <input type="text" id="note" placeholder="e.g. after a week of running">
+      </div>
+    </div>
+    <button class="btn" style="margin-top:18px" onclick="saveProgress()">Save</button>
+    <p class="msg" id="message" style="text-align:left"></p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Weight (kg)</th><th>Note</th></tr></thead>
+      <tbody id="history"><tr><td colspan="3">Loading...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+function loadProgress() {
+  getJSON("/progress/" + getUser().id).then(list => {
+    const table = document.getElementById("history");
+
+    if (list.length === 0) {
+      table.innerHTML = `<tr><td colspan="3">No weigh-ins yet. Add your first one above.</td></tr>`;
+      return;
+    }
+
+    // list is newest first
+    const latest = list[0].weight;
+    const first = list[list.length - 1].weight;
+    const diff = (latest - first).toFixed(1);
+
+    document.getElementById("start").textContent = first;
+    document.getElementById("latest").textContent = latest;
+    document.getElementById("change").textContent = (diff > 0 ? "+" : "") + diff;
+
+    table.innerHTML = list.map(p => `
+      <tr>
+        <td>${niceDate(p.date)}</td>
+        <td>${p.weight}</td>
+        <td>${esc(p.note) || "-"}</td>
+      </tr>`).join("");
+  }).catch(error => console.log(error));
+}
+
+async function saveProgress() {
+  const msg = document.getElementById("message");
+  const weight = document.getElementById("weight").value;
+  const note = document.getElementById("note").value.trim();
+
+  if (!weight) return say(msg, "Please enter your weight.", false);
+
+  const { ok, data } = await send("/progress", "POST", { userId: getUser().id, weight, note });
+  say(msg, data.message, ok);
+
+  if (ok) {
+    document.getElementById("weight").value = "";
+    document.getElementById("note").value = "";
+    loadProgress();
+  }
+}
+
+loadProgress();
+</script>
+</body>
+</html>

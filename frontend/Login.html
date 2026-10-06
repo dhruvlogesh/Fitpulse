@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Public">
+<nav id="nav"></nav>
+
+<div class="narrow">
+  <div class="box">
+    <h1 style="text-align:center">Welcome Back 👋</h1>
+    <p class="muted" style="text-align:center">Log in and pick up where you left off</p>
+
+    <form id="loginForm">
+      <label>User ID</label>
+      <input type="text" id="userId" placeholder="Enter your User ID">
+
+      <label>Password</label>
+      <div class="pw">
+        <input type="password" id="password" placeholder="Enter your password">
+        <button type="button" onclick="showPassword()">👁</button>
+      </div>
+
+      <label>Login As</label>
+      <select id="role">
+        <option value="">Select role</option>
+        <option>Member</option>
+        <option>Coach</option>
+        <option>Admin</option>
+      </select>
+
+      <button class="btn full" type="submit">Login</button>
+      <p class="msg" id="message"></p>
+    </form>
+
+    <p style="text-align:center" class="muted">New here? <a href="Register.html" style="color:#ff6b35">Create an account</a></p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+function showPassword() {
+  const p = document.getElementById("password");
+  p.type = p.type === "password" ? "text" : "password";
+}
+
+document.getElementById("loginForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const userId = document.getElementById("userId").value.trim();
+  const password = document.getElementById("password").value;
+  const role = document.getElementById("role").value;
+  const msg = document.getElementById("message");
+
+  if (!userId || !password || !role) return say(msg, "Please fill all fields.", false);
+  if (password.length < 6) return say(msg, "Password must be at least 6 characters.", false);
+
+  msg.textContent = "Checking login...";
+  msg.style.color = "#2980b9";
+
+  try {
+    const { ok, data } = await send("/login", "POST", { userId, password, role });
+
+    if (!ok) return say(msg, data.message || "Login failed", false);
+
+    localStorage.setItem("userId", data.userId);
+    localStorage.setItem("userName", data.name);
+    localStorage.setItem("role", data.role);
+    say(msg, "Login successful!", true);
+
+    const pages = { Member: "MemberDashboard.html", Coach: "CoachDashboard.html", Admin: "AdminDashboard.html" };
+    setTimeout(() => (window.location.href = pages[data.role]), 500);
+  } catch (err) {
+    say(msg, "Server connection failed.", false);
+  }
+});
+</script>
+</body>
+</html>

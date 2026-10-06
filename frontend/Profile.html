@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Profile - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Any">
+<nav id="nav"></nav>
+
+<div class="container" style="max-width:700px">
+  <h1>My Profile</h1>
+  <div class="box">
+    <div class="detail-row"><span class="label">Full Name:</span> <span id="name">Loading...</span></div>
+    <div class="detail-row"><span class="label">User ID:</span> <span id="userId">Loading...</span></div>
+    <div class="detail-row"><span class="label">Email:</span> <span id="email">Loading...</span></div>
+    <div class="detail-row"><span class="label">Phone:</span> <span id="phone">Loading...</span></div>
+    <div class="detail-row"><span class="label">Account Type:</span> <span id="role">Loading...</span></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+getJSON("/user/" + getUser().id).then(user => {
+  ["name", "userId", "email", "phone", "role"].forEach(field => {
+    document.getElementById(field).textContent = user[field];
+  });
+}).catch(error => console.log(error));
+</script>
+</body>
+</html>

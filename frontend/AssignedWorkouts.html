@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Assigned Workouts - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Coach">
+<nav id="nav"></nav>
+
+<div class="container">
+  <h1>Assigned Workouts</h1>
+  <div id="workouts">Loading workouts...</div>
+</div>
+
+<script src="app.js"></script>
+<script>
+getJSON("/assigned-workouts/" + getUser().id).then(data => {
+  const box = document.getElementById("workouts");
+
+  if (data.length === 0) {
+    box.innerHTML = `
+      <div class="item">
+        <h2>Nothing assigned yet</h2>
+        <p class="info">When the admin assigns a member's workout to you, it will show up here.</p>
+      </div>`;
+    return;
+  }
+
+  box.innerHTML = data.map(w => `
+    <div class="item">
+      <h2>${esc(w.title)}</h2>
+      <div class="info">
+        Member: ${esc(w.memberName)}<br>
+        Workout ID: ${esc(w.workoutId)}<br>
+        ${esc(w.category)} · ${esc(w.intensity)} · ${w.duration} min · ${niceDate(w.date)}<br>
+        Status: <span class="badge ${statusClass(w.status)}">${esc(w.status)}</span><br>
+        Exercises & Notes: ${esc(w.description) || "None"}<br>
+        Your remarks: ${esc(w.remarks) || "No remarks yet"}
+      </div>
+      <br>
+      <a class="btn small" href="UpdateWorkout.html" onclick="selectWorkout('${esc(w.workoutId)}')">Review &amp; Update</a>
+    </div>`).join("");
+}).catch(error => {
+  console.log(error);
+  document.getElementById("workouts").innerHTML = `<div class="item"><h2>Unable to load workouts</h2></div>`;
+});
+</script>
+</body>
+</html>

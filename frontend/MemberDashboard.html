@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Member Dashboard - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Member">
+<nav id="nav"></nav>
+
+<div class="container">
+  <div class="welcome">
+    <h1 id="welcome"></h1>
+    <p>Here's your training at a glance. Ready for today's session?</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><h2 id="total">0</h2><p>Workouts Logged</p></div>
+    <div class="stat"><h2 id="planned">0</h2><p>Planned</p></div>
+    <div class="stat"><h2 id="completed">0</h2><p>Completed</p></div>
+    <div class="stat"><h2 id="minutes">0</h2><p>Minutes Trained</p></div>
+  </div>
+
+  <p class="muted" id="calories" style="text-align:center;margin-top:18px"></p>
+
+  <h2 style="margin-top:35px">What would you like to do?</h2>
+  <div class="cards">
+    <a class="card" href="LogWorkout.html"><div class="icon">📝</div><h3>Log a Workout</h3><p>Record a session you did or plan to do.</p></a>
+    <a class="card" href="MyWorkouts.html"><div class="icon">📋</div><h3>My Workouts</h3><p>See your history and coach remarks.</p></a>
+    <a class="card" href="Progress.html"><div class="icon">📈</div><h3>Track Progress</h3><p>Log your weight and watch the change.</p></a>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+const me = getUser();
+document.getElementById("welcome").textContent = "Welcome back, " + me.name + " 💪";
+
+getJSON("/dashboard/" + me.id).then(data => {
+  document.getElementById("total").textContent = data.total;
+  document.getElementById("planned").textContent = data.planned;
+  document.getElementById("completed").textContent = data.completed;
+  document.getElementById("minutes").textContent = data.minutes;
+  document.getElementById("calories").textContent =
+    data.completed > 0 ? "🔥 You've burned about " + data.calories + " calories so far." : "Finish your first workout to start counting calories.";
+}).catch(error => console.log(error));
+</script>
+</body>
+</html>

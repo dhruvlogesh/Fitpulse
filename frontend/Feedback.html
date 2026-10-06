@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Feedback - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Member">
+<nav id="nav"></nav>
+
+<div class="narrow">
+  <div class="box">
+    <h1 style="text-align:center">How was your workout?</h1>
+
+    <label>Rating</label>
+    <select id="rating">
+      <option value="">Select rating</option>
+      <option value="5">★★★★★ - Loved it</option>
+      <option value="4">★★★★ - Good</option>
+      <option value="3">★★★ - Okay</option>
+      <option value="2">★★ - Tough</option>
+      <option value="1">★ - Not for me</option>
+    </select>
+
+    <label>Comments</label>
+    <textarea id="comment" placeholder="Energy levels, soreness, what you'd change..."></textarea>
+
+    <button class="btn full" onclick="submitFeedback()">Submit Feedback</button>
+    <p class="msg" id="message"></p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+async function submitFeedback() {
+  const rating = document.getElementById("rating").value;
+  const comment = document.getElementById("comment").value.trim();
+  const msg = document.getElementById("message");
+
+  if (!rating || !comment) return say(msg, "Please fill all fields.", false);
+
+  try {
+    const { ok, data } = await send("/feedback", "POST", {
+      userId: getUser().id,
+      workoutId: localStorage.getItem("workoutId"),
+      rating: rating,
+      comment: comment
+    });
+    say(msg, data.message, ok);
+  } catch (err) {
+    say(msg, "Server connection failed.", false);
+  }
+}
+</script>
+</body>
+</html>

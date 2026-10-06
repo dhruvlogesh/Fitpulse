@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Coach Dashboard - FitPulse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-role="Coach">
+<nav id="nav"></nav>
+
+<div class="container">
+  <div class="welcome">
+    <h1 id="welcome"></h1>
+    <p>Review your members' workouts and help them keep improving.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><h2 id="assigned">0</h2><p>Assigned Workouts</p></div>
+    <div class="stat"><h2 id="progress">0</h2><p>In Progress</p></div>
+    <div class="stat"><h2 id="completed">0</h2><p>Completed</p></div>
+  </div>
+
+  <div class="cards">
+    <a class="card" href="AssignedWorkouts.html"><div class="icon">📋</div><h3>Assigned Workouts</h3><p>See sessions waiting for your review.</p></a>
+    <a class="card" href="Profile.html"><div class="icon">👤</div><h3>My Profile</h3><p>Check your account details.</p></a>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+const me = getUser();
+document.getElementById("welcome").textContent = "Welcome, Coach " + me.name + " 🧑‍🏫";
+
+getJSON("/coach-dashboard/" + me.id).then(data => {
+  document.getElementById("assigned").textContent = data.assigned;
+  document.getElementById("progress").textContent = data.progress;
+  document.getElementById("completed").textContent = data.completed;
+}).catch(error => console.log(error));
+</script>
+</body>
+</html>
